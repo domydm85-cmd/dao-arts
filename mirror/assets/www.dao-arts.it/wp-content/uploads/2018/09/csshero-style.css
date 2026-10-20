@@ -1,0 +1,62 @@
+HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.classic.page-bg-color > DIV.row > DIV.small-12.columns.small-centered.blog-content > DIV.vc_row.wpb_row.vc_row-fluid > DIV.wpb_column.vc_column_container.aos-init > DIV.vc_column-inner.vc_custom_1530280414025 > DIV.wpb_wrapper > DIV.vc_separator.wpb_content_element.vc_separator_align_center.vc_sep_width_100.vc_sep_pos_align_center.vc_sep_color_juicy_pink.vc_separator-has-text > H4 {
+       color: rgba(214,0,0,1); 
+    } 
+
+HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.content.single-post > DIV.row > DIV.small-12.columns > DIV {
+       color: rgba(255,255,255,1); 
+    } 
+
+HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.content.single-post > DIV.row > DIV.small-12.columns > DIV > DIV.content > DIV.row > DIV.small-12.large-3.columns > DIV > DIV > A.accent-color > TIME.entry-date.published.updated {
+       color: rgba(0,0,0,1); 
+    } 
+
+HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.content.single-post > DIV.row > DIV.small-12.columns > DIV > DIV.content > DIV.row > DIV.small-12.large-3.columns > DIV > DIV > A.vino-text-link {
+       color: rgb(0, 0, 0); 
+    } 
+
+HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.content.single-post > DIV.row > DIV.small-12.columns > DIV > DIV.content > DIV.row > DIV.small-12.large-3.columns > DIV > DIV > SPAN.meta-header {
+       color: rgba(0,0,0,1); 
+    } 
+
+HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.content.single-post > DIV.row > DIV.small-12.columns > DIV > DIV.content > DIV.row > DIV.small-12.large-3.columns > DIV > DIV > UL > LI > A.vino-text-link {
+       color: rgb(0, 0, 0); 
+    } 
+
+HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.content.single-post > DIV.row > DIV.small-12.columns > DIV > DIV.content > DIV.row > DIV.small-12.large-3.columns > DIV.at_bottom > DIV.adjacent-posts > A.link-hover.link-next > DIV > SPAN {
+       color: rgb(0, 0, 0); 
+    } 
+
+HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.content.single-post > DIV.row > DIV.small-12.columns > DIV > DIV.content > DIV.row > DIV.small-12.large-3.columns {
+       height: 0px; 
+       max-width: 0px; 
+       width: 0px!important; 
+    } 
+
+HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.page-header {
+       background-color: rgba(0,0,0,1); 
+    } 
+
+HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.single-portfolio.vino-single-portfolio.single-portfolio-small.classic.page-bg-color.page-padding.content-top > DIV.single-portfolio-prev-next > DIV.row > DIV.small-12.columns {
+       display: none; 
+    } 
+
+HTML > BODY > NAV#main-navbar-home  {
+       background-color: rgba(0,0,0, 0)!important; 
+       background-image: none!important; 
+    } 
+
+HTML > BODY > NAV#main-navbar-home > DIV.row > DIV.medium-12.columns > DIV.nav > DIV.logo  {
+    } 
+
+HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.content.single-post > DIV.row > DIV.small-12.columns > DIV > DIV.content > DIV.row > DIV.small-12.large-8.large-offset-1.columns > DIV.background-el.aos-init > DIV.swiper-container.swiper-container-horizontal {
+    } 
+
+HTML > BODY > NAV#main-navbar-home > DIV.row > DIV.medium-12.columns > DIV.nav > DIV.logo > A.show-in-viewport.text-logo > H1  {
+    } 
+
+
+@media  screen and (min-width:1025px) { HTML > BODY > NAV#main-navbar-home > DIV.row > DIV.medium-12.columns > DIV.nav > DIV.logo  {   padding-left: 475px!important; }  }  
+@media screen and (max-width: 480px)  { HTML > BODY > DIV.page-wrapper > DIV.page-wrapper-inner > DIV.content.single-post > DIV.row > DIV.small-12.columns > DIV > DIV.content > DIV.row > DIV.small-12.large-8.large-offset-1.columns > DIV.background-el.aos-init > DIV.swiper-container.swiper-container-horizontal {   height: 222px!important; }  }  
+@media screen and (max-width: 480px)  { HTML > BODY > NAV#main-navbar-home > DIV.row > DIV.medium-12.columns > DIV.nav > DIV.logo > A.show-in-viewport.text-logo > H1  {   bottom: 18px; }  }  
+@media screen and (max-width: 480px)  { HTML > BODY > NAV#main-navbar-home > DIV.row > DIV.medium-12.columns > DIV.nav > DIV.logo > A.show-in-viewport.text-logo > H1  {   position: relative; }  }  
+@media screen and (max-width: 480px)  { HTML > BODY > NAV#main-navbar-home > DIV.row > DIV.medium-12.columns > DIV.nav > DIV.logo > A.show-in-viewport.text-logo > H1  {   top: -45px; }  }  
