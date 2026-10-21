@@ -21,7 +21,7 @@ EMBEDS = re.compile(r'class="wp-embedded-content"[^>]*src="([^"#]+)')
 def fetch(url, tries=4):
     for i in range(tries):
         try:
-            req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept-Encoding': 'identity'})
+            req = urllib.request.Request(url, headers={'User-Agent': UA, 'Accept-Encoding': 'identity', 'Cookie': 'origine=1'})
             with urllib.request.urlopen(req, timeout=120) as r:
                 return r.status, r.geturl(), r.read()
         except urllib.error.HTTPError as e:

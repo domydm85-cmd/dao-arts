@@ -1,0 +1,88 @@
+#     ,_,
+#    (O,O)
+#    (   )   Mïmïr
+#  ---"-"---
+name: Pubblica su dao-arts.it
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 5-21 * * *'
+    - cron: '41 2 * * *'
+
+concurrency:
+  group: pubblica
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  controllo:
+    runs-on: ubuntu-latest
+    outputs:
+      cambiato: ${{ steps.esito.outputs.cambiato }}
+      chiave: ${{ steps.stato.outputs.chiave }}
+    steps:
+      - id: stato
+        env:
+          FTP: ${{ secrets.FTP_SERVER }}
+        run: |
+          [ -n "$FTP" ] || exit 0
+          s=$(curl -fsS --retry 3 -A 'Mozilla/5.0' -H 'Cookie: origine=1' https://www.dao-arts.it/sitemap_index.xml | grep -o '<lastmod>[^<]*' | sort | tr -d '\n') || true
+          c=$(curl -fsS --retry 3 -A 'Mozilla/5.0' 'https://www.dao-arts.it/wp-json/wp/v2/comments?per_page=20&_fields=id,date') || true
+          [ -n "$s" ] && [ -n "$c" ] || exit 0
+          echo "chiave=stato-$(printf '%s|%s|%s' "$s" "$c" "$GITHUB_SHA" | sha256sum | cut -c1-24)" >> "$GITHUB_OUTPUT"
+      - id: visto
+        if: steps.stato.outputs.chiave != ''
+        uses: actions/cache/restore@v4
+        with:
+          path: .stato
+          key: ${{ steps.stato.outputs.chiave }}
+          lookup-only: true
+      - id: esito
+        run: echo "cambiato=${{ steps.stato.outputs.chiave != '' && (github.event_name == 'workflow_dispatch' || steps.visto.outputs.cache-hit != 'true' || github.event.schedule == '41 2 * * *') }}" >> "$GITHUB_OUTPUT"
+
+  pubblica:
+    needs: controllo
+    if: needs.controllo.outputs.cambiato == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: |
+          pip install beautifulsoup4 pillow fonttools brotli playwright
+          python -m playwright install --with-deps chromium
+          npm ci
+      - uses: actions/cache/restore@v4
+        with:
+          path: .cache
+          key: build-${{ github.run_id }}
+          restore-keys: build-
+      - run: python3 tools/mirror.py
+      - run: BASE=/ tools/build.sh
+      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ${{ vars.FTP_PROTOCOL || 'ftps' }}
+          security: loose
+          local-dir: dist/
+          server-dir: ${{ vars.FTP_DIR || 'static/' }}
+      - uses: actions/cache/save@v4
+        with:
+          path: .cache
+          key: build-${{ github.run_id }}
+      - run: mkdir -p .stato && date > .stato/ultima
+      - uses: actions/cache/save@v4
+        with:
+          path: .stato
+          key: ${{ needs.controllo.outputs.chiave }}

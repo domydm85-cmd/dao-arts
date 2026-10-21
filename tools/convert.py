@@ -517,7 +517,7 @@ class Page:
             else:
                 absu, u = split_url(form['action'], self.url)
                 if u is not None:
-                    form['action'] = self.url + ('#' + u.fragment if u.fragment else '')
+                    form['action'] = ORIGIN + urllib.parse.urlunsplit(('', '', u.path, u.query, u.fragment))
         for el in body.find_all(True):
             if el.name == 'img':
                 self.img(el)

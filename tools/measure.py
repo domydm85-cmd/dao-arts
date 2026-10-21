@@ -22,8 +22,10 @@ JS = """() => {
 
 
 def serve():
-    root = Path(tempfile.mkdtemp())
-    (root / BASE.strip('/')).symlink_to(ROOT / 'dist')
+    root = ROOT / 'dist'
+    if BASE.strip('/'):
+        root = Path(tempfile.mkdtemp())
+        (root / BASE.strip('/')).symlink_to(ROOT / 'dist')
     handler = functools.partial(http.server.SimpleHTTPRequestHandler, directory=str(root))
     handler.log_message = lambda *a: None
     srv = socketserver.ThreadingTCPServer(('127.0.0.1', 0), handler)
