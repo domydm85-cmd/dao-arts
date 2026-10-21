@@ -35,7 +35,7 @@ jobs:
           echo "chiave=stato-$(printf '%s|%s|%s' "$s" "$c" "$GITHUB_SHA" | sha256sum | cut -c1-24)" >> "$GITHUB_OUTPUT"
       - id: visto
         if: steps.stato.outputs.chiave != ''
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v6
         with:
           path: .stato
           key: ${{ steps.stato.outputs.chiave }}
@@ -49,11 +49,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
-          python-version: '3.12'
-      - uses: actions/setup-node@v4
+          python-version: '3.13'
+      - uses: actions/setup-node@v7
         with:
           node-version: 22
           cache: npm
@@ -61,14 +61,14 @@ jobs:
           pip install beautifulsoup4 pillow fonttools brotli playwright
           python -m playwright install --with-deps chromium
           npm ci
-      - uses: actions/cache/restore@v4
+      - uses: actions/cache/restore@v6
         with:
           path: .cache
           key: build-${{ github.run_id }}
           restore-keys: build-
       - run: python3 tools/mirror.py
       - run: BASE=/ tools/build.sh
-      - uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+      - uses: SamKirkland/FTP-Deploy-Action@v4.4.0
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
@@ -77,12 +77,12 @@ jobs:
           security: loose
           local-dir: dist/
           server-dir: ${{ vars.FTP_DIR || 'static/' }}
-      - uses: actions/cache/save@v4
+      - uses: actions/cache/save@v6
         with:
           path: .cache
           key: build-${{ github.run_id }}
       - run: mkdir -p .stato && date > .stato/ultima
-      - uses: actions/cache/save@v4
+      - uses: actions/cache/save@v6
         with:
           path: .stato
           key: ${{ needs.controllo.outputs.chiave }}
