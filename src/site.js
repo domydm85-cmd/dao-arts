@@ -586,4 +586,13 @@
       }
     });
   }
+
+  const protetta = t => {
+    for (let n = t, i = 0; n && n.nodeType === 1 && n !== body && i < 4; n = n.parentElement, i++) {
+      if (n.tagName === 'IMG' || n.tagName === 'VIDEO' || getComputedStyle(n).backgroundImage !== 'none') return true;
+    }
+    return false;
+  };
+  ['contextmenu', 'dragstart'].forEach(ev => d.addEventListener(ev, e => { if (protetta(e.target)) e.preventDefault(); }));
+  $$('video').forEach(v => v.setAttribute('controlslist', 'nodownload'));
 })();

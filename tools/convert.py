@@ -550,6 +550,7 @@ class Page:
         styles = ''.join(f'<style>{t}</style>' for t in self.css_inline)
         spec = json.dumps({'prefetch': [{'source': 'document', 'where': {'and': [{'href_matches': BASE + '*'}, {'not': {'href_matches': BASE + 'wp-content/*'}}]}, 'eagerness': 'moderate'}]})
         block = (f'<script>{head_js}</script>' + ''.join(pre) + f'<link rel="stylesheet" href="{css_href}">' + styles +
+                 '<style>img,video{-webkit-touch-callout:none;-webkit-user-drag:none;user-select:none}</style>' +
                  f'<script type="speculationrules">{spec}</script><script src="{js_href}" defer></script>' + extra_js)
         frag = BeautifulSoup(block, 'html.parser')
         title = head.find('title')

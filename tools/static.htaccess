@@ -8,6 +8,9 @@ RewriteEngine On
 RewriteBase /
 RewriteCond %{HTTP_HOST} ^dao-arts\.it$ [NC]
 RewriteRule ^(.*)$ https://www.dao-arts.it/$1 [R=301,L]
+RewriteCond %{HTTP_REFERER} .
+RewriteCond %{HTTP_REFERER} !^https?://(www\.)?dao-arts\.it(/|$) [NC]
+RewriteRule \.(jpe?g|png|gif|webp|mp4)$ - [F,NC]
 RewriteCond %{ENV:REDIRECT_STATUS} ^$
 RewriteRule ^static(/|$) - [F]
 RewriteRule ^static/ - [L]
