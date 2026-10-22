@@ -2,17 +2,26 @@
 # (O,O)
 # (   )   Mïmïr
 # -"-"-
-import shutil, zipfile
+import filecmp, shutil, zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
-DIST, OUT = ROOT / 'dist', ROOT / 'pacchi'
+DIST, OUT, UPLOADS = ROOT / 'dist', ROOT / 'pacchi', ROOT / 'mirror' / 'uploads'
 MAX = 45 << 20
 TESTI = {'.html', '.css', '.js', '.json', '.svg', '.txt', '.xml'}
 
 
+def sul_server(f):
+    rel = f.relative_to(DIST).as_posix()
+    if not rel.startswith('wp-content/uploads/'):
+        return False
+    orig = UPLOADS / rel[len('wp-content/uploads/'):]
+    return orig.is_file() and filecmp.cmp(f, orig, shallow=False)
+
+
 def main():
     files = [f for f in sorted(DIST.rglob('*')) if f.is_file() and not any(p.startswith('.') for p in f.relative_to(DIST).parts)]
+    files = [f for f in files if not sul_server(f)]
     gruppi, cur, peso = [], [], 0
     for f in files:
         s = f.stat().st_size

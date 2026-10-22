@@ -13,19 +13,44 @@ header('Content-Type: text/html; charset=utf-8');
 header('Cache-Control: no-store');
 @set_time_limit(300);
 
+$nuova = __DIR__ . '/.copia-nuova';
+$vecchia = __DIR__ . '/.copia-vecchia';
+
+function cancella($dir)
+{
+    if (!is_dir($dir)) {
+        return;
+    }
+    $it = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST);
+    foreach ($it as $f) {
+        $f->isDir() ? rmdir($f->getPathname()) : unlink($f->getPathname());
+    }
+    rmdir($dir);
+}
+
 $zips = glob(__DIR__ . '/static-[0-9].zip');
 sort($zips);
 if (!$zips) {
-    $n = is_dir(__DIR__ . '/static') ? iterator_count(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__ . '/static', FilesystemIterator::SKIP_DOTS))) : 0;
-    if ($n) {
-        unlink(__FILE__);
+    if (!is_dir("$nuova/static")) {
+        exit('<p>Nessuno zip static-N.zip nella cartella principale.</p>');
     }
-    exit($n ? "<p>Fatto: $n file in static. Questo file si è cancellato da solo.</p>" : '<p>Nessuno zip static-N.zip nella cartella principale.</p>');
+    cancella($vecchia);
+    if (is_dir(__DIR__ . '/static') && !rename(__DIR__ . '/static', $vecchia)) {
+        exit('<p>Non riesco a spostare la copia attuale.</p>');
+    }
+    rename("$nuova/static", __DIR__ . '/static');
+    cancella($nuova);
+    cancella($vecchia);
+    $n = iterator_count(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(__DIR__ . '/static', FilesystemIterator::SKIP_DOTS)));
+    unlink(__FILE__);
+    exit("<p>Fatto: $n file nella nuova copia. Questo file si è cancellato da solo.</p>");
 }
 
 $zip = $zips[0];
 $nome = basename($zip);
-$ok = false;
+if (!is_dir($nuova)) {
+    mkdir($nuova, 0755);
+}
 if (class_exists('ZipArchive')) {
     $z = new ZipArchive();
     if ($z->open($zip) !== true) {
@@ -37,7 +62,7 @@ if (class_exists('ZipArchive')) {
             exit("<p>$nome: contiene $e, mi fermo.</p>");
         }
     }
-    $ok = $z->extractTo(__DIR__);
+    $ok = $z->extractTo($nuova);
     $z->close();
     $metodo = 'ZipArchive';
 } else {
@@ -52,11 +77,8 @@ if (class_exists('ZipArchive')) {
             exit("<p>$nome: contiene {$e['filename']}, mi fermo.</p>");
         }
     }
-    $ok = $z->extract(PCLZIP_OPT_PATH, __DIR__) !== 0;
+    $ok = $z->extract(PCLZIP_OPT_PATH, $nuova) !== 0;
     $metodo = 'PclZip';
-    if (!$ok) {
-        exit("<p>$nome: errore ($metodo) " . esc_html($z->errorInfo(true)) . '</p>');
-    }
 }
 if (!$ok) {
     exit("<p>$nome: errore durante l'estrazione ($metodo).</p>");

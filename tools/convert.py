@@ -89,17 +89,16 @@ class Images:
         return key
 
     def out(self, key, width=None):
-        if self.animated(key):
+        W, _ = self.dims(key)
+        width = min(width or W, W, MAX_W)
+        if width == W or self.animated(key):
             dst = 'wp-content/uploads/' + key
             self.jobs[dst] = (key, 'copy')
             return BASE + urllib.parse.quote(dst)
-        W, _ = self.dims(key)
-        if width is None and W > MAX_W:
-            width = MAX_W
         p = Path(key)
-        name = f'{p.stem}.webp' if width is None or width >= W else f'{p.stem}-w{width}.webp'
-        dst = f'wp-content/uploads/{p.parent.as_posix()}/{name}'
-        self.jobs[dst] = (key, None if width is None or width >= W else width)
+        ext = '.png' if p.suffix.lower() in ('.png', '.gif') else p.suffix.lower()
+        dst = f'wp-content/uploads/{p.parent.as_posix()}/{p.stem}-w{width}{ext}'
+        self.jobs[dst] = (key, width)
         return BASE + urllib.parse.quote(dst)
 
     def candidates(self, keys):
@@ -136,16 +135,23 @@ class Images:
             cache = CACHE / 'img' / dst
             src = MIRROR / 'uploads' / key
             if width == 'copy':
-                shutil.copy2(src, out)
+                if out.exists():
+                    out.unlink()
+                os.link(src, out)
                 return
             if not cache.exists() or cache.stat().st_mtime < src.stat().st_mtime:
                 cache.parent.mkdir(parents=True, exist_ok=True)
                 with Image.open(src) as im:
-                    alpha = im.mode in ('RGBA', 'LA') or (im.mode == 'P' and 'transparency' in im.info)
-                    im = im.convert('RGBA' if alpha else 'RGB')
-                    if width:
-                        im = im.resize((width, round(im.height * width / im.width)), Image.LANCZOS)
-                    im.save(cache, 'WEBP', quality=88 if alpha else 82, method=5)
+                    icc = im.info.get('icc_profile')
+                    if out.suffix == '.png':
+                        im = im.convert('RGBA').resize((width, round(im.height * width / im.width)), Image.LANCZOS)
+                        im.save(cache, 'PNG', optimize=True, icc_profile=icc)
+                    elif out.suffix == '.webp':
+                        im = im.convert('RGBA').resize((width, round(im.height * width / im.width)), Image.LANCZOS)
+                        im.save(cache, 'WEBP', quality=92, method=5, icc_profile=icc)
+                    else:
+                        im = im.convert('RGB').resize((width, round(im.height * width / im.width)), Image.LANCZOS)
+                        im.save(cache, 'JPEG', quality=88, subsampling=0, optimize=True, progressive=True, icc_profile=icc)
             if out.exists():
                 out.unlink()
             os.link(cache, out)
